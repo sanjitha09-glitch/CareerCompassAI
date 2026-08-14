@@ -17,6 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useCurrentUser } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import type { QuizQuestion } from "@/lib/ai-prompts";
 import { generateQuiz } from "@/lib/ai.functions";
@@ -38,6 +39,7 @@ const DIFFICULTIES = ["Easy", "Medium", "Hard", "Mixed"] as const;
 
 function AssessmentPage() {
   const queryClient = useQueryClient();
+  const { data: user } = useCurrentUser();
   const makeQuiz = useServerFn(generateQuiz);
   const [category, setCategory] = useState(CATEGORIES[0]!);
   const [difficulty, setDifficulty] = useState<(typeof DIFFICULTIES)[number]>("Mixed");
@@ -95,6 +97,7 @@ function AssessmentPage() {
         .map((q) => q.question.slice(0, 80));
       const percent = Math.round((score / questions.length) * 100);
       const { error } = await supabase.from("assessment_results").insert({
+        user_id: user!.id,
         category,
         score: percent,
         total: questions.length,
@@ -103,6 +106,7 @@ function AssessmentPage() {
       });
       if (error) throw new Error(error.message);
       await supabase.from("activity_logs").insert({
+        user_id: user!.id,
         action: "assessment_completed",
         detail: `${category} · ${percent}%`,
         minutes: Math.max(1, Math.round(seconds / 60)),
