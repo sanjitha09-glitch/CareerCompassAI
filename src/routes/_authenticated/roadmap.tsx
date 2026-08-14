@@ -16,9 +16,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { generateRoadmap } from "@/lib/ai.functions";
 
 export const Route = createFileRoute("/_authenticated/roadmap")({
-  validateSearch: (search: Record<string, unknown>) => ({
-    target: typeof search["target"] === "string" ? search["target"] : undefined,
-  }),
+  validateSearch: (search: Record<string, unknown>): { target?: string } =>
+    typeof search["target"] === "string" ? { target: search["target"] } : {},
   head: () => ({
     meta: [
       { title: "Roadmap — CareerCompass AI" },
