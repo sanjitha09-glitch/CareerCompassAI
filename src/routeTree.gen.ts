@@ -20,6 +20,7 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedInternshipsRouteImport } from './routes/_authenticated/internships'
 import { Route as AuthenticatedInterviewRouteImport } from './routes/_authenticated/interview'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
+import { Route as AuthenticatedProgressRouteImport } from './routes/_authenticated/progress'
 import { Route as AuthenticatedResumeRouteImport } from './routes/_authenticated/resume'
 import { Route as AuthenticatedRoadmapRouteImport } from './routes/_authenticated/roadmap'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
@@ -79,6 +80,11 @@ const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedProgressRoute = AuthenticatedProgressRouteImport.update({
+  id: '/progress',
+  path: '/progress',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedResumeRoute = AuthenticatedResumeRouteImport.update({
   id: '/resume',
   path: '/resume',
@@ -106,6 +112,7 @@ export interface FileRoutesByFullPath {
   '/internships': typeof AuthenticatedInternshipsRoute
   '/interview': typeof AuthenticatedInterviewRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/progress': typeof AuthenticatedProgressRoute
   '/resume': typeof AuthenticatedResumeRoute
   '/roadmap': typeof AuthenticatedRoadmapRoute
   '/settings': typeof AuthenticatedSettingsRoute
@@ -121,6 +128,7 @@ export interface FileRoutesByTo {
   '/internships': typeof AuthenticatedInternshipsRoute
   '/interview': typeof AuthenticatedInterviewRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/progress': typeof AuthenticatedProgressRoute
   '/resume': typeof AuthenticatedResumeRoute
   '/roadmap': typeof AuthenticatedRoadmapRoute
   '/settings': typeof AuthenticatedSettingsRoute
@@ -138,6 +146,7 @@ export interface FileRoutesById {
   '/_authenticated/internships': typeof AuthenticatedInternshipsRoute
   '/_authenticated/interview': typeof AuthenticatedInterviewRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/_authenticated/progress': typeof AuthenticatedProgressRoute
   '/_authenticated/resume': typeof AuthenticatedResumeRoute
   '/_authenticated/roadmap': typeof AuthenticatedRoadmapRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
@@ -155,6 +164,7 @@ export interface FileRouteTypes {
     | '/internships'
     | '/interview'
     | '/profile'
+    | '/progress'
     | '/resume'
     | '/roadmap'
     | '/settings'
@@ -170,6 +180,7 @@ export interface FileRouteTypes {
     | '/internships'
     | '/interview'
     | '/profile'
+    | '/progress'
     | '/resume'
     | '/roadmap'
     | '/settings'
@@ -186,6 +197,7 @@ export interface FileRouteTypes {
     | '/_authenticated/internships'
     | '/_authenticated/interview'
     | '/_authenticated/profile'
+    | '/_authenticated/progress'
     | '/_authenticated/resume'
     | '/_authenticated/roadmap'
     | '/_authenticated/settings'
@@ -276,6 +288,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProfileRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/progress': {
+      id: '/_authenticated/progress'
+      path: '/progress'
+      fullPath: '/progress'
+      preLoaderRoute: typeof AuthenticatedProgressRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/resume': {
       id: '/_authenticated/resume'
       path: '/resume'
@@ -309,6 +328,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedInternshipsRoute: typeof AuthenticatedInternshipsRoute
   AuthenticatedInterviewRoute: typeof AuthenticatedInterviewRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
+  AuthenticatedProgressRoute: typeof AuthenticatedProgressRoute
   AuthenticatedResumeRoute: typeof AuthenticatedResumeRoute
   AuthenticatedRoadmapRoute: typeof AuthenticatedRoadmapRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
@@ -323,6 +343,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedInternshipsRoute: AuthenticatedInternshipsRoute,
   AuthenticatedInterviewRoute: AuthenticatedInterviewRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
+  AuthenticatedProgressRoute: AuthenticatedProgressRoute,
   AuthenticatedResumeRoute: AuthenticatedResumeRoute,
   AuthenticatedRoadmapRoute: AuthenticatedRoadmapRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
