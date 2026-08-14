@@ -30,18 +30,49 @@ export const Route = createFileRoute("/_authenticated/profile")({
 
 const schema = z.object({
   full_name: z.string().trim().min(2, "Name is too short").max(80),
-  headline: z.string().trim().max(120).optional(),
-  bio: z.string().trim().max(600).optional(),
-  college: z.string().trim().max(120).optional(),
-  degree: z.string().trim().max(80).optional(),
-  branch: z.string().trim().max(80).optional(),
-  year: z.string().trim().max(20).optional(),
-  location: z.string().trim().max(80).optional(),
+  headline: z.string().trim().max(120),
+  bio: z.string().trim().max(600),
+  college: z.string().trim().max(120),
+  degree: z.string().trim().max(80),
+  branch: z.string().trim().max(80),
+  year: z.string().trim().max(20),
+  location: z.string().trim().max(80),
   cgpa: z.number().min(0).max(10).nullable(),
   linkedin_url: z.string().trim().url("Enter a valid URL").max(200).or(z.literal("")),
   github_url: z.string().trim().url("Enter a valid URL").max(200).or(z.literal("")),
   portfolio_url: z.string().trim().url("Enter a valid URL").max(200).or(z.literal("")),
 });
+
+type FormKey =
+  | "full_name"
+  | "headline"
+  | "bio"
+  | "college"
+  | "degree"
+  | "branch"
+  | "year"
+  | "location"
+  | "cgpa"
+  | "linkedin_url"
+  | "github_url"
+  | "portfolio_url";
+
+type FormState = Record<FormKey, string>;
+
+const emptyForm: FormState = {
+  full_name: "",
+  headline: "",
+  bio: "",
+  college: "",
+  degree: "",
+  branch: "",
+  year: "",
+  location: "",
+  cgpa: "",
+  linkedin_url: "",
+  github_url: "",
+  portfolio_url: "",
+};
 
 type TagKey = "skills" | "interests" | "languages";
 
@@ -49,7 +80,7 @@ function ProfilePage() {
   const { data: user } = useCurrentUser();
   const { data: profile } = useProfile();
   const queryClient = useQueryClient();
-  const [form, setForm] = useState<Record<string, string>>({});
+  const [form, setForm] = useState<FormState>(emptyForm);
   const [tags, setTags] = useState<Record<TagKey, string[]>>({ skills: [], interests: [], languages: [] });
   const [drafts, setDrafts] = useState<Record<TagKey, string>>({ skills: "", interests: "", languages: "" });
   const [uploading, setUploading] = useState(false);
@@ -78,7 +109,7 @@ function ProfilePage() {
   }, [profile]);
 
   const completion = (() => {
-    const fields = [form.full_name, form.headline, form.college, form.degree, form.branch, form.year, form.bio];
+    const fields = [form["full_name"], form["headline"], form["college"], form["degree"], form["branch"], form["year"], form["bio"]];
     const filled = fields.filter((f) => f && f.trim().length > 0).length;
     const tagScore = (tags.skills.length ? 1 : 0) + (tags.interests.length ? 1 : 0);
     return Math.round(((filled + tagScore) / (fields.length + 2)) * 100);
@@ -88,7 +119,7 @@ function ProfilePage() {
     mutationFn: async () => {
       const parsed = schema.safeParse({
         ...form,
-        cgpa: form.cgpa ? Number(form.cgpa) : null,
+        cgpa: form["cgpa"] ? Number(form["cgpa"]) : null,
       });
       if (!parsed.success) throw new Error(parsed.error.issues[0]!.message);
       const { error } = await supabase
@@ -142,12 +173,12 @@ function ProfilePage() {
     setDrafts({ ...drafts, [key]: "" });
   };
 
-  const field = (key: string, label: string, placeholder?: string) => (
+  const field = (key: FormKey, label: string, placeholder?: string) => (
     <div className="space-y-2">
       <Label htmlFor={key}>{label}</Label>
       <Input
         id={key}
-        value={form[key] ?? ""}
+        value={form[key]}
         placeholder={placeholder}
         onChange={(e) => setForm({ ...form, [key]: e.target.value })}
       />
@@ -172,11 +203,11 @@ function ProfilePage() {
             <Avatar className="size-16">
               {profile?.avatar_url && <AvatarImage src={profile.avatar_url} alt="Your profile photo" />}
               <AvatarFallback className="bg-primary/15 text-primary">
-                {(form.full_name || "U").slice(0, 2).toUpperCase()}
+                {(form["full_name"] || "U").slice(0, 2).toUpperCase()}
               </AvatarFallback>
             </Avatar>
             <div>
-              <p className="font-semibold">{form.full_name || "Your name"}</p>
+              <p className="font-semibold">{form["full_name"] || "Your name"}</p>
               <p className="text-xs text-muted-foreground">{user?.email}</p>
               <label className="mt-2 inline-flex cursor-pointer items-center gap-1 text-xs text-primary">
                 {uploading ? <Loader2 className="size-3 animate-spin" /> : <Upload className="size-3" />}
@@ -257,7 +288,7 @@ function ProfilePage() {
             <Textarea
               id="bio"
               rows={5}
-              value={form.bio ?? ""}
+              value={form["bio"]}
               maxLength={600}
               placeholder="What are you building, and where do you want to be in two years?"
               onChange={(e) => setForm({ ...form, bio: e.target.value })}
